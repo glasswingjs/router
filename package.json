@@ -1,0 +1,65 @@
+{
+  "name": "template-ts",
+  "version": "1.0.0",
+  "description": "Template for TypeScript Projects",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rollup -c --environment NODE_ENV:production",
+    "build:dts": "dts-bundle-generator ./src/index.ts -o dist/index.d.ts",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'",
+    "postbuild": "npm run build:dts",
+    "prebuild": "cross-env rimraf dist",
+    "pretest": "cross-env rimraf dist",
+    "prettier": "prettier",
+    "prettier:check": "npm run prettier -- --list-different \"src/**/*.{ts,tsx}\" && npm run prettier -- --list-different \"test/**/*.{ts,tsx}\"",
+    "prettier:write": "npm run prettier -- --write \"src/**/*.{ts,tsx}\" && npm run prettier -- --write \"test/**/*.{ts,tsx}\"",
+    "preserve": "cross-env rimraf dist",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "test:html": "nyc --reporter html --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "test:watch": "nodemon --exec \"npm run test\"",
+    "git-hook:pre-commit": "npm run prettier:write && npm run lint && npm run test",
+    "serve": "ts-node src/index.ts",
+    "serve:watch": "nodemon --exec \"npm run serve\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dragoscirjan/template-ts.git"
+  },
+  "author": "Dragos Cirjan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dragoscirjan/template-ts/issues"
+  },
+  "homepage": "https://github.com/dragoscirjan/template-ts#readme",
+  "devDependencies": {
+    "@types/chai": "^4.2.3",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.7.11",
+    "@types/node-fetch": "^2.5.2",
+    "chai": "^4.2.0",
+    "cross-env": "^6.0.3",
+    "mocha": "^6.2.1",
+    "node-fetch": "^2.6.0",
+    "nodemon": "^1.19.4",
+    "nyc": "^14.1.1",
+    "prettier": "^1.18.2",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^3.0.0",
+    "rollup": "^1.25.0",
+    "ts-node": "^8.4.1",
+    "tslint": "^5.20.0",
+    "tsyringe": "^3.4.0",
+    "typescript": "^3.6.3",
+    "typings": "^2.1.1",
+    "yaml": "^1.7.2",
+    "yorkie": "^2.0.0"
+  },
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "@glasswing/http": "github:glasswingjs/http#master",
+    "find-my-way": "^2.2.1"
+  },
+  "gitHooks": {
+    "pre-commit": "npm run git-hook:pre-commit && git add ."
+  }
+}
