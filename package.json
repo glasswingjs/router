@@ -2,7 +2,7 @@
   "name": "template-ts",
   "version": "1.0.0",
   "description": "Template for TypeScript Projects",
-  "main": "dist/index.js",
+  "main": "dist/common/index.js",
   "scripts": {
     "build": "rollup -c --environment NODE_ENV:production",
     "build:dts": "dts-bundle-generator ./src/index.ts -o dist/index.d.ts",
