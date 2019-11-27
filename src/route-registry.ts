@@ -1,5 +1,5 @@
-import {Injectable, Singleton} from '../di'
-import {RequestHandler, RequestMethod} from '../http'
+import {Injectable, Singleton} from '@glasswing/common'
+import {RequestHandler, RequestMethod} from '@glasswing/http'
 
 export interface Route {
   method: RequestMethod
