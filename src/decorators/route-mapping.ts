@@ -9,6 +9,25 @@ export const ROUTE_REGISTRY_METADATA_NAME = '__route_registry__'
  * @link https://nehalist.io/routing-with-typescript-decorators/#routedecorator
  */
 
+
+const generateRouteWrapper = (oldMethod: any, target: any): RequestHandler =>
+  /**
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @param {any[]} params
+   */
+  (req: Request, res: Response, params: any) => {
+    // TODO:
+    // // calculate old method's arguments
+    // const argsDefinitions: any[] = await mapHandlerArguments(req, res, params, Reflect.getMetadata(
+    //   methodArgumentsDescriptor(propertyKey),
+    //   target,
+    // ) as ParameterDescriptor[])
+    // // return old method call
+    return oldMethod.apply(target /*, argsDefinitions */)
+  }
+
 /**
  *
  * @param {RequestMethod} method
@@ -24,22 +43,8 @@ const createRouteMappingDecorator = (method: RequestMethod) /*: ??? */ => {
      */
     const descriptor = (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor =>
       extendPropertyDescriptor(descriptor, oldMethod => {
-        /**
-         *
-         * @param {Request} req
-         * @param {Response} res
-         * @param {any[]} params
-         */
-        const handler: RequestHandler = (req: Request, res: Response, params: any) => {
-          // TODO:
-          // // calculate old method's arguments
-          // const argsDefinitions: any[] = await mapHandlerArguments(req, res, params, Reflect.getMetadata(
-          //   methodArgumentsDescriptor(propertyKey),
-          //   target,
-          // ) as ParameterDescriptor[])
-          // // return old method call
-          return oldMethod.apply(target /*, argsDefinitions */)
-        }
+
+        const handler: RequestHandler = generateRouteWrapper(descriptor.value, target)
 
         registerRouteDescriptor(target, method, Array.isArray(path) ? path : [path || '/'], handler)
 
@@ -97,14 +102,14 @@ export const registerRouteDescriptor = (
   Reflect.defineMetadata(ROUTE_REGISTRY_METADATA_NAME, routeRegistry, target)
 }
 
-// /**
-//  * Obtain controller's path mappings
-//  *
-//  * @param target
-//  */
-// export const getControllerPathMappings = (target: any): RouteRegistry => {
-//   if (!Reflect.hasMetadata(ROUTE_REGISTRY_METADATA_NAME, target)) {
-//     // TODO: Throw an eror
-//   }
-//   return Reflect.getMetadata(ROUTE_REGISTRY_METADATA_NAME, target)
-// }
+/**
+ * Obtain controller's path mappings
+ *
+ * @param target
+ */
+export const getControllerPathMappings = (target: any): RouteRegistry => {
+  if (!Reflect.hasMetadata(ROUTE_REGISTRY_METADATA_NAME, target)) {
+    // TODO: Throw an eror
+  }
+  return Reflect.getMetadata(ROUTE_REGISTRY_METADATA_NAME, target)
+}
