@@ -1,11 +1,7 @@
-import {Injectable, Singleton} from '@glasswing/common'
+import {Singleton} from '@glasswing/common'
 import {RequestHandler, RequestMethod} from '@glasswing/http'
 
-export interface Route {
-  method: RequestMethod
-  path: string
-  handler: RequestHandler
-}
+import {RouteDescriptor} from './_types'
 
 export class RouteRegistryArgumentException extends Error {}
 
@@ -13,7 +9,7 @@ export class RouteRegistryRouteExistsException extends Error {}
 
 @Singleton()
 export class RouteRegistry {
-  private registry: Route[] = []
+  private registry: RouteDescriptor[] = []
 
   /**
    * Clear the regiutry. Use only when Router is destroyed.
@@ -45,8 +41,8 @@ export class RouteRegistry {
    *    }
    *    controller.registerRoute(route)
    */
-  public registerRoute(route: string | Route, method?: RequestMethod, handler?: RequestHandler): void {
-    let xroute: Route
+  public registerRoute(route: string | RouteDescriptor, method?: RequestMethod, handler?: RequestHandler): void {
+    let xroute: RouteDescriptor
     if (typeof route === 'string') {
       if (!handler) {
         throw new RouteRegistryArgumentException(
@@ -62,8 +58,8 @@ export class RouteRegistry {
       xroute = route
     }
 
-    const match: Route | undefined = this.registry.find(
-      (r: Route) => r.path === xroute.path && r.method === xroute.method,
+    const match: RouteDescriptor | undefined = this.registry.find(
+      (r: RouteDescriptor) => r.path === xroute.path && r.method === xroute.method,
     )
     if (match) {
       throw new RouteRegistryRouteExistsException(
@@ -77,9 +73,9 @@ export class RouteRegistry {
   /**
    * Obtain the list of routes stored in the registry
    * Getter
-   * @returns {Route[]}
+   * @returns {RouteDescriptor[]}
    */
-  get routes(): Route[] {
+  get routes(): RouteDescriptor[] {
     return this.registry
   }
 
@@ -91,7 +87,7 @@ export class RouteRegistry {
    */
   public unregisterRoutes(path: string, method?: RequestMethod): void {
     this.registry = this.registry
-      .map((r: Route) => (r.path === path && (r.method === method || method === undefined) ? null : r))
-      .filter((r: Route | null) => r !== null) as Route[]
+      .map((r: RouteDescriptor) => (r.path === path && (r.method === method || method === undefined) ? null : r))
+      .filter((r: RouteDescriptor | null) => r !== null) as RouteDescriptor[]
   }
 }

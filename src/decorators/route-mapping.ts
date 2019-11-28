@@ -1,6 +1,7 @@
+import 'reflect-metadata'
 import {Request, RequestHandler, RequestMethod, Response} from '@glasswing/http'
 import {RouteRegistry} from '../route-registry'
-import {ParameterDescriptor} from '../_types'
+import {extendPropertyDescriptor} from '@glasswing/common'
 
 export const ROUTE_REGISTRY_METADATA_NAME = '__route_registry__'
 
@@ -12,39 +13,42 @@ export const ROUTE_REGISTRY_METADATA_NAME = '__route_registry__'
  *
  * @param {RequestMethod} method
  */
-const createRouteMappingDecorator = (method: RequestMethod) => {
+const createRouteMappingDecorator = (method: RequestMethod) /*: ??? */ => {
   /**
    *
    * @param {string|string[]} path
    */
   const decorator = (path?: string | string[]): MethodDecorator => {
-    return (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor => {
-      // store old method to call from wrapper
-      const oldMethod = descriptor.value
+    /**
+     *
+     */
+    const descriptor = (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor =>
+      extendPropertyDescriptor(descriptor, oldMethod => {
+        /**
+         *
+         * @param {Request} req
+         * @param {Response} res
+         * @param {any[]} params
+         */
+        const handler: RequestHandler = (req: Request, res: Response, params: any) => {
+          // TODO:
+          // // calculate old method's arguments
+          // const argsDefinitions: any[] = await mapHandlerArguments(req, res, params, Reflect.getMetadata(
+          //   methodArgumentsDescriptor(propertyKey),
+          //   target,
+          // ) as ParameterDescriptor[])
+          // // return old method call
+          return oldMethod.apply(target /*, argsDefinitions */)
+        }
 
-      /**
-       *
-       * @param {Request} req
-       * @param {Response} res
-       * @param {any[]} params
-       */
-      const handler: RequestHandler = (req: Request, res: Response, params: any) => {
-        // // calculate old method's arguments
-        // const argsDefinitions: any[] = await mapHandlerArguments(req, res, params, Reflect.getMetadata(
-        //   methodArgumentsDescriptor(propertyKey),
-        //   target,
-        // ) as ParameterDescriptor[])
-        // // return old method call
-        // return oldMethod.apply(target, argsDefinitions)
-      }
+        registerRouteDescriptor(target, method, Array.isArray(path) ? path : [path || '/'], handler)
 
-      appendControllerPathMapping(target, method, Array.isArray(path) ? path : [path || '/'], handler)
-
-      return Object.assign(descriptor, {
-        value: handler,
+        return handler
       })
-    }
+
+    return descriptor
   }
+
   return decorator
 }
 
@@ -78,7 +82,7 @@ export const Put = createRouteMappingDecorator(RequestMethod.PUT)
  * @param path
  * @param handler
  */
-export const appendControllerPathMapping = (
+export const registerRouteDescriptor = (
   target: any,
   method: RequestMethod,
   path: string[],
@@ -93,43 +97,14 @@ export const appendControllerPathMapping = (
   Reflect.defineMetadata(ROUTE_REGISTRY_METADATA_NAME, routeRegistry, target)
 }
 
-/**
- * Obtain controller's path mappings
- *
- * @param target
- */
-export const getControllerPathMappings = (target: any): RouteRegistry => {
-  if (!Reflect.hasMetadata(ROUTE_REGISTRY_METADATA_NAME, target)) {
-    // TODO: Throw an eror
-  }
-  return Reflect.getMetadata(ROUTE_REGISTRY_METADATA_NAME, target)
-}
-
-/**
- * Convert parameter descriptors into actual values to be passed to the method
- *
- * @param req
- * @param res
- * @param params
- * @param descriptors
- */
-const mapHandlerArguments = async (
-  req: Request,
-  res: Response,
-  params: object,
-  descriptors: ParameterDescriptor[],
-): Promise<any[]> => {
-  return await Promise.all(
-    (descriptors || []).map((descriptor: ParameterDescriptor): any | Promise<any> => {
-      const data: any =
-        descriptor.source === 'request'
-          ? req
-          : descriptor.source === 'response'
-          ? res
-          : descriptor.source === 'params'
-          ? params
-          : null
-      return descriptor.callable(data)
-    }),
-  )
-}
+// /**
+//  * Obtain controller's path mappings
+//  *
+//  * @param target
+//  */
+// export const getControllerPathMappings = (target: any): RouteRegistry => {
+//   if (!Reflect.hasMetadata(ROUTE_REGISTRY_METADATA_NAME, target)) {
+//     // TODO: Throw an eror
+//   }
+//   return Reflect.getMetadata(ROUTE_REGISTRY_METADATA_NAME, target)
+// }
