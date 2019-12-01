@@ -1,8 +1,9 @@
-import 'reflect-metadata'
-import {Request, RequestHandler, RequestMethod, Response} from '@glasswing/http'
-import {RouteRegistry} from '../route-registry'
+// import 'reflect-metadata'
+
 import {extendPropertyDescriptor} from '@glasswing/common'
+import {Request, RequestHandler, RequestMethod, Response} from '@glasswing/http'
 import {Observable} from 'rxjs'
+import {RouteRegistry} from '../route-registry'
 
 export const ROUTE_REGISTRY_METADATA_NAME = '__route_registry__'
 
@@ -10,11 +11,11 @@ export const ROUTE_REGISTRY_METADATA_NAME = '__route_registry__'
  * @link https://nehalist.io/routing-with-typescript-decorators/#routedecorator
  */
 
- /**
-  *
-  * @param oldMethod
-  * @param target
-  */
+/**
+ *
+ * @param oldMethod
+ * @param target
+ */
 const generateRouteWrapper = (oldMethod: any, target: any): RequestHandler =>
   /**
    *
@@ -50,8 +51,8 @@ const generateRouteWrapper = (oldMethod: any, target: any): RequestHandler =>
           },
           complete() {
             res.end('') // TODO: Prepare
-          }
-        });
+          },
+        })
         break
       default:
       // prepareSuccessResponse(res, data) // TODO: Prepare
@@ -81,10 +82,10 @@ const createRouteMappingDecorator = (method: RequestMethod) /*: ??? */ => {
     const descriptor = (
       target: any,
       propertyKey: string | symbol,
-      descriptor: PropertyDescriptor,
+      propertyDescriptor: PropertyDescriptor,
     ): PropertyDescriptor =>
-      extendPropertyDescriptor(descriptor, oldMethod => {
-        const handler: RequestHandler = generateRouteWrapper(descriptor.value, target)
+      extendPropertyDescriptor(propertyDescriptor, oldMethod => {
+        const handler: RequestHandler = generateRouteWrapper(propertyDescriptor.value, target)
 
         registerRouteDescriptor(target, method, Array.isArray(path) ? path : [path || '/'], handler)
 
