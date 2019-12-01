@@ -85,5 +85,29 @@ describe('src/decorator/route-mapping => *', () => {
       const route = mapping(controller, RequestMethod.HEAD, '/head')
       expect(route).to.not.be.null
     })
+
+    it('@Options() => Should add a @Options route mapping', () => {
+      expect(hmd(ROUTE_REGISTRY_METADATA_NAME, controller)).to.be.true
+      const route = mapping(controller, RequestMethod.OPTIONS, '/options')
+      expect(route).to.not.be.null
+    })
+
+    it('@Patch() => Should add a @Patch route mapping', () => {
+      expect(hmd(ROUTE_REGISTRY_METADATA_NAME, controller)).to.be.true
+      const route = mapping(controller, RequestMethod.PATCH, '/no-args-patch')
+      expect(route).to.not.be.null
+    })
+
+    it('@Post() => Should add a @Post route mapping', () => {
+      expect(hmd(ROUTE_REGISTRY_METADATA_NAME, controller)).to.be.true
+      const route = mapping(controller, RequestMethod.POST, '/no-args-post')
+      expect(route).to.not.be.null
+    })
+
+    it('@Put() => Should add a @Put route mapping', () => {
+      expect(hmd(ROUTE_REGISTRY_METADATA_NAME, controller)).to.be.true
+      const route = mapping(controller, RequestMethod.PUT, '/no-args-put')
+      expect(route).to.not.be.null
+    })
   })
 })

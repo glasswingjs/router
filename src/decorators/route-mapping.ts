@@ -2,6 +2,7 @@ import 'reflect-metadata'
 import {Request, RequestHandler, RequestMethod, Response} from '@glasswing/http'
 import {RouteRegistry} from '../route-registry'
 import {extendPropertyDescriptor} from '@glasswing/common'
+import {Observable} from 'rxjs'
 
 export const ROUTE_REGISTRY_METADATA_NAME = '__route_registry__'
 
@@ -9,7 +10,11 @@ export const ROUTE_REGISTRY_METADATA_NAME = '__route_registry__'
  * @link https://nehalist.io/routing-with-typescript-decorators/#routedecorator
  */
 
-
+ /**
+  *
+  * @param oldMethod
+  * @param target
+  */
 const generateRouteWrapper = (oldMethod: any, target: any): RequestHandler =>
   /**
    *
@@ -18,6 +23,39 @@ const generateRouteWrapper = (oldMethod: any, target: any): RequestHandler =>
    * @param {any[]} params
    */
   (req: Request, res: Response, params: any) => {
+    let result: any = null
+    try {
+      result = oldMethod.apply(target, []) // TODO: obtain arguments; see comment bellow
+    } catch (error) {
+      // prepareErrorResponse(res, error) // TODO: Prepare
+      return
+    }
+    switch (true) {
+      case result instanceof Promise:
+        result
+          .then((data: string) => {
+            // prepareSuccessResponse(res, data) // TODO: Prepare
+          })
+          .catch((error: any) => {
+            // prepareErrorResponse(res, error) // TODO: Prepare
+          })
+        break
+      case result instanceof Observable:
+        result.subscribe({
+          next(data: string) {
+            // prepareSuccessResponse(res, data) // TODO: Prepare
+          },
+          error(error: any) {
+            // prepareErrorResponse(res, error) // TODO: Prepare
+          },
+          complete() {
+            res.end('') // TODO: Prepare
+          }
+        });
+        break
+      default:
+      // prepareSuccessResponse(res, data) // TODO: Prepare
+    }
     // TODO:
     // // calculate old method's arguments
     // const argsDefinitions: any[] = await mapHandlerArguments(req, res, params, Reflect.getMetadata(
@@ -25,7 +63,6 @@ const generateRouteWrapper = (oldMethod: any, target: any): RequestHandler =>
     //   target,
     // ) as ParameterDescriptor[])
     // // return old method call
-    return oldMethod.apply(target /*, argsDefinitions */)
   }
 
 /**
@@ -41,9 +78,12 @@ const createRouteMappingDecorator = (method: RequestMethod) /*: ??? */ => {
     /**
      *
      */
-    const descriptor = (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor =>
+    const descriptor = (
+      target: any,
+      propertyKey: string | symbol,
+      descriptor: PropertyDescriptor,
+    ): PropertyDescriptor =>
       extendPropertyDescriptor(descriptor, oldMethod => {
-
         const handler: RequestHandler = generateRouteWrapper(descriptor.value, target)
 
         registerRouteDescriptor(target, method, Array.isArray(path) ? path : [path || '/'], handler)
@@ -78,6 +118,14 @@ export const Put = createRouteMappingDecorator(RequestMethod.PUT)
  * Helpers
  *
  *****************************************************************************/
+
+const prepareSuccessResponse = (res: Response, data: string): void => {
+  // TODO
+}
+
+const prepareErrorResponse = (res: Response, data: string): void => {
+  // TODO
+}
 
 /**
  * Append a path mapping to a controller

@@ -60,7 +60,8 @@
   "dependencies": {
     "@glasswing/common": "github:glasswingjs/common#master",
     "@glasswing/http": "github:glasswingjs/http#master",
-    "find-my-way": "^2.2.1"
+    "find-my-way": "^2.2.1",
+    "rxjs": "^6.5.3"
   },
   "gitHooks": {
     "pre-commit": "npm run git-hook:pre-commit && git add ."
