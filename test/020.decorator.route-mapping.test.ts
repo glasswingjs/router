@@ -54,7 +54,7 @@ const mapping = (target: any, method: RequestMethod, path: string) => {
   return routes.length ? routes.pop() : null
 }
 
-describe('src/decorator/route-mapping => *', () => {
+describe('@glasswing/router/decorator', () => {
   describe('All(route: string) => ', () => {
     let controller: TestController
 
