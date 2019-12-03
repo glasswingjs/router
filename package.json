@@ -17,7 +17,7 @@
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "test:html": "nyc --reporter html --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "test:watch": "nodemon --exec \"npm run test\"",
-    "git-hook:pre-commit": "npm run prettier:write && npm run lint && npm run test",
+    "git-hook:pre-commit": "npm run prettier:write && npm run lint && npm run test && npm run build",
     "serve": "ts-node src/index.ts",
     "serve:watch": "nodemon --exec \"npm run serve\""
   },
