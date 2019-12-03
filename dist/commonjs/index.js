@@ -217,7 +217,7 @@ var createRouteMappingDecorator = function (method) {
          *
          */
         var descriptor = function (target, propertyKey, propertyDescriptor) {
-            return common.extendPropertyDescriptor(propertyDescriptor, function (oldMethod) {
+            return common.extendClassMethod(propertyDescriptor, function (oldMethod) {
                 var handler = generateRouteWrapper(propertyDescriptor.value, target);
                 registerRouteDescriptor(target, method, Array.isArray(path) ? path : [path || '/'], handler);
                 return handler;

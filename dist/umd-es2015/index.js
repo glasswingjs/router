@@ -181,7 +181,7 @@
             /**
              *
              */
-            const descriptor = (target, propertyKey, propertyDescriptor) => common.extendPropertyDescriptor(propertyDescriptor, oldMethod => {
+            const descriptor = (target, propertyKey, propertyDescriptor) => common.extendClassMethod(propertyDescriptor, (oldMethod) => {
                 const handler = generateRouteWrapper(propertyDescriptor.value, target);
                 registerRouteDescriptor(target, method, Array.isArray(path) ? path : [path || '/'], handler);
                 return handler;

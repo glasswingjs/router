@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 
-import {extendPropertyDescriptor} from '@glasswing/common'
+import {ClassMethod, extendClassMethod} from '@glasswing/common'
 import {Request, RequestHandler, RequestMethod, Response} from '@glasswing/http'
 import {Observable} from 'rxjs'
 import {RouteRegistry} from '../route-registry'
@@ -84,7 +84,7 @@ const createRouteMappingDecorator = (method: RequestMethod) /*: ??? */ => {
       propertyKey: string | symbol,
       propertyDescriptor: PropertyDescriptor,
     ): PropertyDescriptor =>
-      extendPropertyDescriptor(propertyDescriptor, oldMethod => {
+      extendClassMethod(propertyDescriptor, (oldMethod: ClassMethod) => {
         const handler: RequestHandler = generateRouteWrapper(propertyDescriptor.value, target)
 
         registerRouteDescriptor(target, method, Array.isArray(path) ? path : [path || '/'], handler)

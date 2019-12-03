@@ -1,10 +1,10 @@
 System.register(['reflect-metadata', '@glasswing/common', '@glasswing/http', 'rxjs', 'find-my-way', 'tsyringe'], function (exports) {
     'use strict';
-    var Singleton, extendPropertyDescriptor, RequestMethod, Observable, RouterFactory, container;
+    var Singleton, extendClassMethod, RequestMethod, Observable, RouterFactory, container;
     return {
         setters: [function () {}, function (module) {
             Singleton = module.Singleton;
-            extendPropertyDescriptor = module.extendPropertyDescriptor;
+            extendClassMethod = module.extendClassMethod;
         }, function (module) {
             RequestMethod = module.RequestMethod;
         }, function (module) {
@@ -222,7 +222,7 @@ System.register(['reflect-metadata', '@glasswing/common', '@glasswing/http', 'rx
                      *
                      */
                     var descriptor = function (target, propertyKey, propertyDescriptor) {
-                        return extendPropertyDescriptor(propertyDescriptor, function (oldMethod) {
+                        return extendClassMethod(propertyDescriptor, function (oldMethod) {
                             var handler = generateRouteWrapper(propertyDescriptor.value, target);
                             registerRouteDescriptor(target, method, Array.isArray(path) ? path : [path || '/'], handler);
                             return handler;

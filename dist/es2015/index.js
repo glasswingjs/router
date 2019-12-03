@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { Singleton, extendPropertyDescriptor } from '@glasswing/common';
+import { Singleton, extendClassMethod } from '@glasswing/common';
 import { RequestMethod } from '@glasswing/http';
 import { Observable } from 'rxjs';
 import RouterFactory from 'find-my-way';
@@ -180,7 +180,7 @@ const createRouteMappingDecorator = (method) => {
         /**
          *
          */
-        const descriptor = (target, propertyKey, propertyDescriptor) => extendPropertyDescriptor(propertyDescriptor, oldMethod => {
+        const descriptor = (target, propertyKey, propertyDescriptor) => extendClassMethod(propertyDescriptor, (oldMethod) => {
             const handler = generateRouteWrapper(propertyDescriptor.value, target);
             registerRouteDescriptor(target, method, Array.isArray(path) ? path : [path || '/'], handler);
             return handler;
