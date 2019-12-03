@@ -1,4 +1,4 @@
-// import 'reflect-metadata'
+import 'reflect-metadata'
 
 import {extendPropertyDescriptor} from '@glasswing/common'
 import {Request, RequestHandler, RequestMethod, Response} from '@glasswing/http'

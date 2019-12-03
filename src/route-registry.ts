@@ -1,3 +1,5 @@
+import 'reflect-metadata'
+
 import {Singleton} from '@glasswing/common'
 import {RequestHandler, RequestMethod} from '@glasswing/http'
 
