@@ -1,10 +1,11 @@
 /// <reference types="node" />
 
-import { RequestHandler, RequestMethod } from '@glasswing/http';
+import { Request, RequestHandler, RequestMethod, Response } from '@glasswing/http';
 import { HTTPVersion, Instance } from 'find-my-way';
 import { DependencyContainer } from 'tsyringe';
 
 export declare type Router = Instance<HTTPVersion.V1> | Instance<HTTPVersion.V2>;
+export declare type RouterCallable = (req: Request, res: Response) => void;
 export interface RouteDescriptor {
 	method: RequestMethod;
 	path: string;
