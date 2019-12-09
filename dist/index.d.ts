@@ -1,9 +1,52 @@
 /// <reference types="node" />
 
-import { Request, RequestHandler, RequestMethod, Response } from '@glasswing/http';
 import { HTTPVersion, Instance } from 'find-my-way';
-import { DependencyContainer } from 'tsyringe';
+import { IncomingMessage, ServerResponse } from 'http';
+import { Http2ServerRequest, Http2ServerResponse } from 'http2';
 
+export declare type Request = IncomingMessage | Http2ServerRequest;
+export declare type Response = ServerResponse | Http2ServerResponse;
+export declare type RequestHandler = (req: Request, res: Response, params: any) => void;
+declare enum RequestMethod {
+	ALL = "all",
+	/**
+	 * The CONNECT method establishes a tunnel to the server identified by the target  resource.
+	 */
+	CONNECT = "connect",
+	/**
+	 * The DELETE method deletes the specified resource.
+	 */
+	DELETE = "delete",
+	/**
+	 * The GET method requests a representation of the specified resource. Requests using GET should only retrieve data.
+	 */
+	GET = "get",
+	/**
+	 * The HEAD method asks for a response identical to that of a GET request, but without the response body.
+	 */
+	HEAD = "head",
+	/**
+	 * The OPTIONS method is used to describe the communication options for the target resource.
+	 */
+	OPTIONS = "options",
+	/**
+	 * The PATCH method is used to apply partial modifications to a resource.
+	 */
+	PATCH = "patch",
+	/**
+	 * The POST method is used to submit an entity to the specified resource, often causing a change in state or side
+	 * effects on the server.
+	 */
+	POST = "post",
+	/**
+	 * The PUT method replaces all current representations of the target resource with the request payload.
+	 */
+	PUT = "put",
+	/**
+	 * The TRACE method performs a message loop-back test along the path to the target resource.
+	 */
+	TRACE = "trace"
+}
 export declare type Router = Instance<HTTPVersion.V1> | Instance<HTTPVersion.V2>;
 export declare type RouterCallable = (req: Request, res: Response) => void;
 export interface RouteDescriptor {
@@ -83,6 +126,6 @@ export declare const registerRouteDescriptor: (target: any, method: RequestMetho
  * @param target
  */
 export declare const getControllerPathMappings: (target: any) => RouteRegistry;
-export declare const registerRouter: () => import("tsyringe").DependencyContainer;
+export declare const registerRouter: () => void;
 
 export {};

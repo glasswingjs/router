@@ -222,8 +222,10 @@ const getControllerPathMappings = (target) => {
     return Reflect.getMetadata(ROUTE_REGISTRY_METADATA_NAME, target);
 };
 
-const registerRouter = () => container.register('Router', {
-    useFactory: () => RouterFactory(),
-});
+const registerRouter = () => {
+    container.register('Router', {
+        useFactory: () => RouterFactory(),
+    });
+};
 
 export { All, Delete, Get, Head, Options, Patch, Post, Put, ROUTE_REGISTRY_METADATA_NAME, RouteRegistry, RouteRegistryArgumentException, RouteRegistryRouteExistsException, getControllerPathMappings, registerRouteDescriptor, registerRouter };

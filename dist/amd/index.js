@@ -252,7 +252,7 @@ define('index', ['exports', 'reflect-metadata', '@glasswing/common', '@glasswing
     };
 
     var registerRouter = function () {
-        return tsyringe.container.register('Router', {
+        tsyringe.container.register('Router', {
             useFactory: function () { return RouterFactory(); },
         });
     };

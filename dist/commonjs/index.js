@@ -261,7 +261,7 @@ var getControllerPathMappings = function (target) {
 };
 
 var registerRouter = function () {
-    return tsyringe.container.register('Router', {
+    tsyringe.container.register('Router', {
         useFactory: function () { return RouterFactory(); },
     });
 };

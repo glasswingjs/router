@@ -223,9 +223,11 @@
         return Reflect.getMetadata(ROUTE_REGISTRY_METADATA_NAME, target);
     };
 
-    const registerRouter = () => tsyringe.container.register('Router', {
-        useFactory: () => RouterFactory(),
-    });
+    const registerRouter = () => {
+        tsyringe.container.register('Router', {
+            useFactory: () => RouterFactory(),
+        });
+    };
 
     exports.All = All;
     exports.Delete = Delete;

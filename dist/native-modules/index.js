@@ -255,7 +255,7 @@ var getControllerPathMappings = function (target) {
 };
 
 var registerRouter = function () {
-    return container.register('Router', {
+    container.register('Router', {
         useFactory: function () { return RouterFactory(); },
     });
 };

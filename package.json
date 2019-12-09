@@ -9,11 +9,11 @@
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "postbuild": "npm run build:dts",
     "prebuild": "cross-env rimraf dist",
+    "prepare-for-dev": "node .scripts/prepare-for-dev.js",
     "pretest": "cross-env rimraf dist",
     "prettier": "prettier",
     "prettier:check": "npm run prettier -- --list-different \"src/**/*.{ts,tsx}\" && npm run prettier -- --list-different \"test/**/*.{ts,tsx}\"",
     "prettier:write": "npm run prettier -- --write \"src/**/*.{ts,tsx}\" && npm run prettier -- --write \"test/**/*.{ts,tsx}\"",
-    "preserve": "cross-env rimraf dist",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "test:html": "nyc --reporter html --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "test:watch": "nodemon --exec \"npm run test\"",
@@ -44,13 +44,11 @@
     "nodemon": "^1.19.4",
     "nyc": "^14.1.1",
     "prettier": "^1.18.2",
-    "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
     "rollup": "^1.27.5",
     "rollup-plugin-typescript2": "^0.25.2",
     "ts-node": "^8.4.1",
     "tslint": "^5.20.0",
-    "tsyringe": "^3.4.0",
     "typescript": "^3.6.3",
     "typings": "^2.1.1",
     "yaml": "^1.7.2",
@@ -61,9 +59,11 @@
     "@glasswing/common": "github:glasswingjs/common#master",
     "@glasswing/http": "github:glasswingjs/http#master",
     "find-my-way": "^2.2.1",
-    "rxjs": "^6.5.3"
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^6.5.3",
+    "tsyringe": "^3.4.0"
   },
   "gitHooks": {
-    "pre-commit": "npm run git-hook:pre-commit && git add ."
+    "pre-commit": "npm run git-hook:pre-commit && npm run build && git add ."
   }
 }
