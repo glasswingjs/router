@@ -5,9 +5,8 @@
   "main": "dist/commonjs/index.js",
   "scripts": {
     "build": "rollup -c --environment NODE_ENV:production",
-    "build:dts": "dts-bundle-generator ./src/index.ts -o dist/index.d.ts",
+    "clean": "cross-env rimraf .nyc_output .rollupcache dist",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
-    "postbuild": "npm run build:dts",
     "prebuild": "cross-env rimraf dist",
     "prepare-for-dev": "node .scripts/prepare-for-dev.js",
     "pretest": "cross-env rimraf dist",
@@ -46,6 +45,7 @@
     "prettier": "^1.18.2",
     "rimraf": "^3.0.0",
     "rollup": "^1.27.5",
+    "rollup-plugin-dts": "^1.1.13",
     "rollup-plugin-typescript2": "^0.25.2",
     "ts-node": "^8.4.1",
     "tslint": "^5.20.0",

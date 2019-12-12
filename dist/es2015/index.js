@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Singleton, extendClassMethod } from '@glasswing/common';
-import { RequestMethod } from '@glasswing/http';
+import { HttpRequestMethod } from '@glasswing/http';
 import { Observable } from 'rxjs';
 import RouterFactory from 'find-my-way';
 import { container } from 'tsyringe';
@@ -50,15 +50,15 @@ let RouteRegistry = class RouteRegistry {
      * @returns {void}
      * @example
      *    const controller = new MyController()
-     *    controller.registerRoute('/users', RequestMethod.GET, (req: Request, res: Response) => {
+     *    controller.registerRoute('/users', HttpRequestMethod.GET, (req: HttpRequest, res: Response) => {
      *      ...
      *    })
      * @example
      *    const controller = new MyController()
      *    const route: Route = {
      *      path: '/users',
-     *      method: RequestMethod.GET,
-     *      handler: (req: Request, res: Response) => {
+     *      method: HttpRequestMethod.GET,
+     *      handler: (req: HttpRequest, res: Response) => {
      *        ...
      *      }
      *    }
@@ -68,11 +68,11 @@ let RouteRegistry = class RouteRegistry {
         let xroute;
         if (typeof route === 'string') {
             if (!handler) {
-                throw new RouteRegistryArgumentException('For `registryRoute(string, RequestMethod, RequestHandler)` form, `handler` parameter si mandatory.');
+                throw new RouteRegistryArgumentException('For `registryRoute(string, HttpRequestMethod, HttpRouteHandler)` form, `handler` parameter is mandatory.');
             }
             xroute = {
                 handler,
-                method: method || RequestMethod.GET,
+                method: method || HttpRequestMethod.GET,
                 path: route,
             };
         }
@@ -88,7 +88,7 @@ let RouteRegistry = class RouteRegistry {
     /**
      * Obtain the list of routes stored in the registry
      * Getter
-     * @returns {RouteDescriptor[]}
+     * @returns {HttpRouteDescriptor[]}
      */
     get routes() {
         return this.registry;
@@ -121,43 +121,43 @@ const ROUTE_REGISTRY_METADATA_NAME = '__route_registry__';
 const generateRouteWrapper = (oldMethod, target) => 
 /**
  *
- * @param {Request} req
- * @param {Response} res
+ * @param {HttpRequest} req
+ * @param {HttpResponse} res
  * @param {any[]} params
  */
-(req, res, params) => {
+(req, res) => {
     let result = null;
     try {
         result = oldMethod.apply(target, []); // TODO: obtain arguments; see comment bellow
     }
     catch (error) {
-        // prepareErrorResponse(res, error) // TODO: Prepare
+        // prepareErrorHttpResponse(res, error) // TODO: Prepare
         return;
     }
     switch (true) {
         case result instanceof Promise:
             result
                 .then((data) => {
-                // prepareSuccessResponse(res, data) // TODO: Prepare
+                // prepareSuccessHttpResponse(res, data) // TODO: Prepare
             })
                 .catch((error) => {
-                // prepareErrorResponse(res, error) // TODO: Prepare
+                // prepareErrorHttpResponse(res, error) // TODO: Prepare
             });
             break;
         case result instanceof Observable:
             result.subscribe({
                 next(data) {
-                    // prepareSuccessResponse(res, data) // TODO: Prepare
+                    // prepareSuccessHttpResponse(res, data) // TODO: Prepare
                 },
                 error(error) {
-                    // prepareErrorResponse(res, error) // TODO: Prepare
+                    // prepareErrorHttpResponse(res, error) // TODO: Prepare
                 },
                 complete() {
                     res.end(''); // TODO: Prepare
                 },
             });
             break;
-        // prepareSuccessResponse(res, data) // TODO: Prepare
+        // prepareSuccessHttpResponse(res, data) // TODO: Prepare
     }
     // TODO:
     // // calculate old method's arguments
@@ -169,7 +169,7 @@ const generateRouteWrapper = (oldMethod, target) =>
 };
 /**
  *
- * @param {RequestMethod} method
+ * @param {HttpRequestMethod} method
  */
 const createRouteMappingDecorator = (method) => {
     /**
@@ -189,14 +189,14 @@ const createRouteMappingDecorator = (method) => {
     };
     return decorator;
 };
-const All = createRouteMappingDecorator(RequestMethod.ALL);
-const Delete = createRouteMappingDecorator(RequestMethod.DELETE);
-const Get = createRouteMappingDecorator(RequestMethod.GET);
-const Head = createRouteMappingDecorator(RequestMethod.HEAD);
-const Options = createRouteMappingDecorator(RequestMethod.OPTIONS);
-const Patch = createRouteMappingDecorator(RequestMethod.PATCH);
-const Post = createRouteMappingDecorator(RequestMethod.POST);
-const Put = createRouteMappingDecorator(RequestMethod.PUT);
+const All = createRouteMappingDecorator(HttpRequestMethod.ALL);
+const Delete = createRouteMappingDecorator(HttpRequestMethod.DELETE);
+const Get = createRouteMappingDecorator(HttpRequestMethod.GET);
+const Head = createRouteMappingDecorator(HttpRequestMethod.HEAD);
+const Options = createRouteMappingDecorator(HttpRequestMethod.OPTIONS);
+const Patch = createRouteMappingDecorator(HttpRequestMethod.PATCH);
+const Post = createRouteMappingDecorator(HttpRequestMethod.POST);
+const Put = createRouteMappingDecorator(HttpRequestMethod.PUT);
 /**
  * Append a path mapping to a controller
  *

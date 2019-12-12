@@ -51,15 +51,15 @@
          * @returns {void}
          * @example
          *    const controller = new MyController()
-         *    controller.registerRoute('/users', RequestMethod.GET, (req: Request, res: Response) => {
+         *    controller.registerRoute('/users', HttpRequestMethod.GET, (req: HttpRequest, res: Response) => {
          *      ...
          *    })
          * @example
          *    const controller = new MyController()
          *    const route: Route = {
          *      path: '/users',
-         *      method: RequestMethod.GET,
-         *      handler: (req: Request, res: Response) => {
+         *      method: HttpRequestMethod.GET,
+         *      handler: (req: HttpRequest, res: Response) => {
          *        ...
          *      }
          *    }
@@ -69,11 +69,11 @@
             let xroute;
             if (typeof route === 'string') {
                 if (!handler) {
-                    throw new RouteRegistryArgumentException('For `registryRoute(string, RequestMethod, RequestHandler)` form, `handler` parameter si mandatory.');
+                    throw new RouteRegistryArgumentException('For `registryRoute(string, HttpRequestMethod, HttpRouteHandler)` form, `handler` parameter is mandatory.');
                 }
                 xroute = {
                     handler,
-                    method: method || http.RequestMethod.GET,
+                    method: method || http.HttpRequestMethod.GET,
                     path: route,
                 };
             }
@@ -89,7 +89,7 @@
         /**
          * Obtain the list of routes stored in the registry
          * Getter
-         * @returns {RouteDescriptor[]}
+         * @returns {HttpRouteDescriptor[]}
          */
         get routes() {
             return this.registry;
@@ -122,43 +122,43 @@
     const generateRouteWrapper = (oldMethod, target) => 
     /**
      *
-     * @param {Request} req
-     * @param {Response} res
+     * @param {HttpRequest} req
+     * @param {HttpResponse} res
      * @param {any[]} params
      */
-    (req, res, params) => {
+    (req, res) => {
         let result = null;
         try {
             result = oldMethod.apply(target, []); // TODO: obtain arguments; see comment bellow
         }
         catch (error) {
-            // prepareErrorResponse(res, error) // TODO: Prepare
+            // prepareErrorHttpResponse(res, error) // TODO: Prepare
             return;
         }
         switch (true) {
             case result instanceof Promise:
                 result
                     .then((data) => {
-                    // prepareSuccessResponse(res, data) // TODO: Prepare
+                    // prepareSuccessHttpResponse(res, data) // TODO: Prepare
                 })
                     .catch((error) => {
-                    // prepareErrorResponse(res, error) // TODO: Prepare
+                    // prepareErrorHttpResponse(res, error) // TODO: Prepare
                 });
                 break;
             case result instanceof rxjs.Observable:
                 result.subscribe({
                     next(data) {
-                        // prepareSuccessResponse(res, data) // TODO: Prepare
+                        // prepareSuccessHttpResponse(res, data) // TODO: Prepare
                     },
                     error(error) {
-                        // prepareErrorResponse(res, error) // TODO: Prepare
+                        // prepareErrorHttpResponse(res, error) // TODO: Prepare
                     },
                     complete() {
                         res.end(''); // TODO: Prepare
                     },
                 });
                 break;
-            // prepareSuccessResponse(res, data) // TODO: Prepare
+            // prepareSuccessHttpResponse(res, data) // TODO: Prepare
         }
         // TODO:
         // // calculate old method's arguments
@@ -170,7 +170,7 @@
     };
     /**
      *
-     * @param {RequestMethod} method
+     * @param {HttpRequestMethod} method
      */
     const createRouteMappingDecorator = (method) => {
         /**
@@ -190,14 +190,14 @@
         };
         return decorator;
     };
-    const All = createRouteMappingDecorator(http.RequestMethod.ALL);
-    const Delete = createRouteMappingDecorator(http.RequestMethod.DELETE);
-    const Get = createRouteMappingDecorator(http.RequestMethod.GET);
-    const Head = createRouteMappingDecorator(http.RequestMethod.HEAD);
-    const Options = createRouteMappingDecorator(http.RequestMethod.OPTIONS);
-    const Patch = createRouteMappingDecorator(http.RequestMethod.PATCH);
-    const Post = createRouteMappingDecorator(http.RequestMethod.POST);
-    const Put = createRouteMappingDecorator(http.RequestMethod.PUT);
+    const All = createRouteMappingDecorator(http.HttpRequestMethod.ALL);
+    const Delete = createRouteMappingDecorator(http.HttpRequestMethod.DELETE);
+    const Get = createRouteMappingDecorator(http.HttpRequestMethod.GET);
+    const Head = createRouteMappingDecorator(http.HttpRequestMethod.HEAD);
+    const Options = createRouteMappingDecorator(http.HttpRequestMethod.OPTIONS);
+    const Patch = createRouteMappingDecorator(http.HttpRequestMethod.PATCH);
+    const Post = createRouteMappingDecorator(http.HttpRequestMethod.POST);
+    const Put = createRouteMappingDecorator(http.HttpRequestMethod.PUT);
     /**
      * Append a path mapping to a controller
      *

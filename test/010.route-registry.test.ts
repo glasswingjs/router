@@ -1,19 +1,21 @@
 import 'reflect-metadata'
-import {Request, RequestMethod, Response} from '@glasswing/http'
+import {HttpRequest, Http2Request, HttpRequestMethod, HttpResponse, Http2Response} from '@glasswing/http'
 import {expect} from 'chai'
 import {container} from 'tsyringe'
 
-import {RouteDescriptor, RouteRegistry, registerRouter} from '../src'
+import {HttpRouteDescriptor, RouteRegistry, registerRouter} from '../src'
 
 registerRouter()
+
+const handler = (req: HttpRequest | Http2Request, res: HttpResponse | Http2Response) => {}
 
 describe('@glasswing/router', () => {
   describe('RouteRegistry', () => {
     let routeRegistry: RouteRegistry
 
-    const routeAsString: RouteDescriptor = {
-      handler: (req: Request, res: Response) => {},
-      method: RequestMethod.GET,
+    const routeAsString: HttpRouteDescriptor = {
+      handler: handler,
+      method: HttpRequestMethod.GET,
       path: '/path-as-string',
     }
 
@@ -21,9 +23,9 @@ describe('@glasswing/router', () => {
       routeRegistry.registerRoute(routeAsString.path, routeAsString.method, routeAsString.handler)
     }
 
-    const routeAsObject: RouteDescriptor = {
-      handler: (req: Request, res: Response) => {},
-      method: RequestMethod.GET,
+    const routeAsObject: HttpRouteDescriptor = {
+      handler: handler,
+      method: HttpRequestMethod.GET,
       path: '/path-as-object',
     }
     const addRouteAsObject = () => {
@@ -45,7 +47,7 @@ describe('@glasswing/router', () => {
     it('::registerRoute(/test, get, handler) should register properly', () => {
       expect(addRouteAsString).to.not.throw()
 
-      const addedRoute: RouteDescriptor | undefined = routeRegistry.routes.find(
+      const addedRoute: HttpRouteDescriptor | undefined = routeRegistry.routes.find(
         r => r.path === routeAsString.path && r.method === routeAsString.method,
       )
       expect(addedRoute).to.not.be.a('null')
@@ -57,15 +59,15 @@ describe('@glasswing/router', () => {
     })
 
     it('::registerRoute(/test, get) should throw an error', () => {
-      expect(() => routeRegistry.registerRoute('/test', RequestMethod.GET)).to.throw(
-        'For `registryRoute(string, RequestMethod, RequestHandler)` form, `handler` parameter si mandatory.',
+      expect(() => routeRegistry.registerRoute('/test', HttpRequestMethod.GET)).to.throw(
+        'For `registryRoute(string, HttpRequestMethod, HttpRouteHandler)` form, `handler` parameter is mandatory.',
       )
     })
 
     it('::registerRoute(route)', () => {
       expect(addRouteAsObject).to.not.throw()
 
-      const addedRoute: RouteDescriptor | undefined = routeRegistry.routes.find(
+      const addedRoute: HttpRouteDescriptor | undefined = routeRegistry.routes.find(
         r => r.path === routeAsObject.path && r.method === routeAsObject.method,
       )
       expect(addedRoute).to.not.be.a('null')
@@ -81,9 +83,9 @@ describe('@glasswing/router', () => {
     })
 
     it('::unregisterRoutes(/path-to-string, post) to not remove route (with get method)', () => {
-      routeRegistry.unregisterRoutes(routeAsString.path, RequestMethod.POST)
+      routeRegistry.unregisterRoutes(routeAsString.path, HttpRequestMethod.POST)
 
-      const addedRoute: RouteDescriptor | undefined = routeRegistry.routes.find(
+      const addedRoute: HttpRouteDescriptor | undefined = routeRegistry.routes.find(
         r => r.path === routeAsString.path && r.method === routeAsString.method,
       )
       expect(addedRoute).to.not.be.a('null')
@@ -93,7 +95,7 @@ describe('@glasswing/router', () => {
     it('::unregisterRoutes(/path-to-string, get) to remove route (with get method)', () => {
       routeRegistry.unregisterRoutes(routeAsString.path, routeAsString.method)
 
-      const addedRoute: RouteDescriptor | undefined = routeRegistry.routes.find(
+      const addedRoute: HttpRouteDescriptor | undefined = routeRegistry.routes.find(
         r => r.path === routeAsString.path && r.method === routeAsString.method,
       )
       expect(addedRoute).to.be.a('undefined')
@@ -102,7 +104,7 @@ describe('@glasswing/router', () => {
     it('::unregisterRoutes(/path-to-object) to remove all routes (with this path)', () => {
       routeRegistry.unregisterRoutes(routeAsObject.path)
 
-      const addedRoute: RouteDescriptor | undefined = routeRegistry.routes.find(r => r.path === routeAsObject.path)
+      const addedRoute: HttpRouteDescriptor | undefined = routeRegistry.routes.find(r => r.path === routeAsObject.path)
       expect(addedRoute).to.be.a('undefined')
     })
 

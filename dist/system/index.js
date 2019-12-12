@@ -1,12 +1,12 @@
 System.register(['reflect-metadata', '@glasswing/common', '@glasswing/http', 'rxjs', 'find-my-way', 'tsyringe'], function (exports) {
     'use strict';
-    var Singleton, extendClassMethod, RequestMethod, Observable, RouterFactory, container;
+    var Singleton, extendClassMethod, HttpRequestMethod, Observable, RouterFactory, container;
     return {
         setters: [function () {}, function (module) {
             Singleton = module.Singleton;
             extendClassMethod = module.extendClassMethod;
         }, function (module) {
-            RequestMethod = module.RequestMethod;
+            HttpRequestMethod = module.HttpRequestMethod;
         }, function (module) {
             Observable = module.Observable;
         }, function (module) {
@@ -85,15 +85,15 @@ System.register(['reflect-metadata', '@glasswing/common', '@glasswing/http', 'rx
                  * @returns {void}
                  * @example
                  *    const controller = new MyController()
-                 *    controller.registerRoute('/users', RequestMethod.GET, (req: Request, res: Response) => {
+                 *    controller.registerRoute('/users', HttpRequestMethod.GET, (req: HttpRequest, res: Response) => {
                  *      ...
                  *    })
                  * @example
                  *    const controller = new MyController()
                  *    const route: Route = {
                  *      path: '/users',
-                 *      method: RequestMethod.GET,
-                 *      handler: (req: Request, res: Response) => {
+                 *      method: HttpRequestMethod.GET,
+                 *      handler: (req: HttpRequest, res: Response) => {
                  *        ...
                  *      }
                  *    }
@@ -103,11 +103,11 @@ System.register(['reflect-metadata', '@glasswing/common', '@glasswing/http', 'rx
                     var xroute;
                     if (typeof route === 'string') {
                         if (!handler) {
-                            throw new RouteRegistryArgumentException('For `registryRoute(string, RequestMethod, RequestHandler)` form, `handler` parameter si mandatory.');
+                            throw new RouteRegistryArgumentException('For `registryRoute(string, HttpRequestMethod, HttpRouteHandler)` form, `handler` parameter is mandatory.');
                         }
                         xroute = {
                             handler: handler,
-                            method: method || RequestMethod.GET,
+                            method: method || HttpRequestMethod.GET,
                             path: route,
                         };
                     }
@@ -124,7 +124,7 @@ System.register(['reflect-metadata', '@glasswing/common', '@glasswing/http', 'rx
                     /**
                      * Obtain the list of routes stored in the registry
                      * Getter
-                     * @returns {RouteDescriptor[]}
+                     * @returns {HttpRouteDescriptor[]}
                      */
                     get: function () {
                         return this.registry;
@@ -161,43 +161,43 @@ System.register(['reflect-metadata', '@glasswing/common', '@glasswing/http', 'rx
             var generateRouteWrapper = function (oldMethod, target) {
                 /**
                  *
-                 * @param {Request} req
-                 * @param {Response} res
+                 * @param {HttpRequest} req
+                 * @param {HttpResponse} res
                  * @param {any[]} params
                  */
-                return function (req, res, params) {
+                return function (req, res) {
                     var result = null;
                     try {
                         result = oldMethod.apply(target, []); // TODO: obtain arguments; see comment bellow
                     }
                     catch (error) {
-                        // prepareErrorResponse(res, error) // TODO: Prepare
+                        // prepareErrorHttpResponse(res, error) // TODO: Prepare
                         return;
                     }
                     switch (true) {
                         case result instanceof Promise:
                             result
                                 .then(function (data) {
-                                // prepareSuccessResponse(res, data) // TODO: Prepare
+                                // prepareSuccessHttpResponse(res, data) // TODO: Prepare
                             })
                                 .catch(function (error) {
-                                // prepareErrorResponse(res, error) // TODO: Prepare
+                                // prepareErrorHttpResponse(res, error) // TODO: Prepare
                             });
                             break;
                         case result instanceof Observable:
                             result.subscribe({
                                 next: function (data) {
-                                    // prepareSuccessResponse(res, data) // TODO: Prepare
+                                    // prepareSuccessHttpResponse(res, data) // TODO: Prepare
                                 },
                                 error: function (error) {
-                                    // prepareErrorResponse(res, error) // TODO: Prepare
+                                    // prepareErrorHttpResponse(res, error) // TODO: Prepare
                                 },
                                 complete: function () {
                                     res.end(''); // TODO: Prepare
                                 },
                             });
                             break;
-                        // prepareSuccessResponse(res, data) // TODO: Prepare
+                        // prepareSuccessHttpResponse(res, data) // TODO: Prepare
                     }
                     // TODO:
                     // // calculate old method's arguments
@@ -210,7 +210,7 @@ System.register(['reflect-metadata', '@glasswing/common', '@glasswing/http', 'rx
             };
             /**
              *
-             * @param {RequestMethod} method
+             * @param {HttpRequestMethod} method
              */
             var createRouteMappingDecorator = function (method) {
                 /**
@@ -232,14 +232,14 @@ System.register(['reflect-metadata', '@glasswing/common', '@glasswing/http', 'rx
                 };
                 return decorator;
             };
-            var All = exports('All', createRouteMappingDecorator(RequestMethod.ALL));
-            var Delete = exports('Delete', createRouteMappingDecorator(RequestMethod.DELETE));
-            var Get = exports('Get', createRouteMappingDecorator(RequestMethod.GET));
-            var Head = exports('Head', createRouteMappingDecorator(RequestMethod.HEAD));
-            var Options = exports('Options', createRouteMappingDecorator(RequestMethod.OPTIONS));
-            var Patch = exports('Patch', createRouteMappingDecorator(RequestMethod.PATCH));
-            var Post = exports('Post', createRouteMappingDecorator(RequestMethod.POST));
-            var Put = exports('Put', createRouteMappingDecorator(RequestMethod.PUT));
+            var All = exports('All', createRouteMappingDecorator(HttpRequestMethod.ALL));
+            var Delete = exports('Delete', createRouteMappingDecorator(HttpRequestMethod.DELETE));
+            var Get = exports('Get', createRouteMappingDecorator(HttpRequestMethod.GET));
+            var Head = exports('Head', createRouteMappingDecorator(HttpRequestMethod.HEAD));
+            var Options = exports('Options', createRouteMappingDecorator(HttpRequestMethod.OPTIONS));
+            var Patch = exports('Patch', createRouteMappingDecorator(HttpRequestMethod.PATCH));
+            var Post = exports('Post', createRouteMappingDecorator(HttpRequestMethod.POST));
+            var Put = exports('Put', createRouteMappingDecorator(HttpRequestMethod.PUT));
             /**
              * Append a path mapping to a controller
              *

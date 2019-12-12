@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Singleton, extendClassMethod } from '@glasswing/common';
-import { RequestMethod } from '@glasswing/http';
+import { HttpRequestMethod } from '@glasswing/http';
 import { Observable } from 'rxjs';
 import RouterFactory from 'find-my-way';
 import { container } from 'tsyringe';
@@ -74,15 +74,15 @@ var RouteRegistry = /** @class */ (function () {
      * @returns {void}
      * @example
      *    const controller = new MyController()
-     *    controller.registerRoute('/users', RequestMethod.GET, (req: Request, res: Response) => {
+     *    controller.registerRoute('/users', HttpRequestMethod.GET, (req: HttpRequest, res: Response) => {
      *      ...
      *    })
      * @example
      *    const controller = new MyController()
      *    const route: Route = {
      *      path: '/users',
-     *      method: RequestMethod.GET,
-     *      handler: (req: Request, res: Response) => {
+     *      method: HttpRequestMethod.GET,
+     *      handler: (req: HttpRequest, res: Response) => {
      *        ...
      *      }
      *    }
@@ -92,11 +92,11 @@ var RouteRegistry = /** @class */ (function () {
         var xroute;
         if (typeof route === 'string') {
             if (!handler) {
-                throw new RouteRegistryArgumentException('For `registryRoute(string, RequestMethod, RequestHandler)` form, `handler` parameter si mandatory.');
+                throw new RouteRegistryArgumentException('For `registryRoute(string, HttpRequestMethod, HttpRouteHandler)` form, `handler` parameter is mandatory.');
             }
             xroute = {
                 handler: handler,
-                method: method || RequestMethod.GET,
+                method: method || HttpRequestMethod.GET,
                 path: route,
             };
         }
@@ -113,7 +113,7 @@ var RouteRegistry = /** @class */ (function () {
         /**
          * Obtain the list of routes stored in the registry
          * Getter
-         * @returns {RouteDescriptor[]}
+         * @returns {HttpRouteDescriptor[]}
          */
         get: function () {
             return this.registry;
@@ -150,43 +150,43 @@ var ROUTE_REGISTRY_METADATA_NAME = '__route_registry__';
 var generateRouteWrapper = function (oldMethod, target) {
     /**
      *
-     * @param {Request} req
-     * @param {Response} res
+     * @param {HttpRequest} req
+     * @param {HttpResponse} res
      * @param {any[]} params
      */
-    return function (req, res, params) {
+    return function (req, res) {
         var result = null;
         try {
             result = oldMethod.apply(target, []); // TODO: obtain arguments; see comment bellow
         }
         catch (error) {
-            // prepareErrorResponse(res, error) // TODO: Prepare
+            // prepareErrorHttpResponse(res, error) // TODO: Prepare
             return;
         }
         switch (true) {
             case result instanceof Promise:
                 result
                     .then(function (data) {
-                    // prepareSuccessResponse(res, data) // TODO: Prepare
+                    // prepareSuccessHttpResponse(res, data) // TODO: Prepare
                 })
                     .catch(function (error) {
-                    // prepareErrorResponse(res, error) // TODO: Prepare
+                    // prepareErrorHttpResponse(res, error) // TODO: Prepare
                 });
                 break;
             case result instanceof Observable:
                 result.subscribe({
                     next: function (data) {
-                        // prepareSuccessResponse(res, data) // TODO: Prepare
+                        // prepareSuccessHttpResponse(res, data) // TODO: Prepare
                     },
                     error: function (error) {
-                        // prepareErrorResponse(res, error) // TODO: Prepare
+                        // prepareErrorHttpResponse(res, error) // TODO: Prepare
                     },
                     complete: function () {
                         res.end(''); // TODO: Prepare
                     },
                 });
                 break;
-            // prepareSuccessResponse(res, data) // TODO: Prepare
+            // prepareSuccessHttpResponse(res, data) // TODO: Prepare
         }
         // TODO:
         // // calculate old method's arguments
@@ -199,7 +199,7 @@ var generateRouteWrapper = function (oldMethod, target) {
 };
 /**
  *
- * @param {RequestMethod} method
+ * @param {HttpRequestMethod} method
  */
 var createRouteMappingDecorator = function (method) {
     /**
@@ -221,14 +221,14 @@ var createRouteMappingDecorator = function (method) {
     };
     return decorator;
 };
-var All = createRouteMappingDecorator(RequestMethod.ALL);
-var Delete = createRouteMappingDecorator(RequestMethod.DELETE);
-var Get = createRouteMappingDecorator(RequestMethod.GET);
-var Head = createRouteMappingDecorator(RequestMethod.HEAD);
-var Options = createRouteMappingDecorator(RequestMethod.OPTIONS);
-var Patch = createRouteMappingDecorator(RequestMethod.PATCH);
-var Post = createRouteMappingDecorator(RequestMethod.POST);
-var Put = createRouteMappingDecorator(RequestMethod.PUT);
+var All = createRouteMappingDecorator(HttpRequestMethod.ALL);
+var Delete = createRouteMappingDecorator(HttpRequestMethod.DELETE);
+var Get = createRouteMappingDecorator(HttpRequestMethod.GET);
+var Head = createRouteMappingDecorator(HttpRequestMethod.HEAD);
+var Options = createRouteMappingDecorator(HttpRequestMethod.OPTIONS);
+var Patch = createRouteMappingDecorator(HttpRequestMethod.PATCH);
+var Post = createRouteMappingDecorator(HttpRequestMethod.POST);
+var Put = createRouteMappingDecorator(HttpRequestMethod.PUT);
 /**
  * Append a path mapping to a controller
  *

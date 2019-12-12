@@ -80,15 +80,15 @@ var RouteRegistry = /** @class */ (function () {
      * @returns {void}
      * @example
      *    const controller = new MyController()
-     *    controller.registerRoute('/users', RequestMethod.GET, (req: Request, res: Response) => {
+     *    controller.registerRoute('/users', HttpRequestMethod.GET, (req: HttpRequest, res: Response) => {
      *      ...
      *    })
      * @example
      *    const controller = new MyController()
      *    const route: Route = {
      *      path: '/users',
-     *      method: RequestMethod.GET,
-     *      handler: (req: Request, res: Response) => {
+     *      method: HttpRequestMethod.GET,
+     *      handler: (req: HttpRequest, res: Response) => {
      *        ...
      *      }
      *    }
@@ -98,11 +98,11 @@ var RouteRegistry = /** @class */ (function () {
         var xroute;
         if (typeof route === 'string') {
             if (!handler) {
-                throw new RouteRegistryArgumentException('For `registryRoute(string, RequestMethod, RequestHandler)` form, `handler` parameter si mandatory.');
+                throw new RouteRegistryArgumentException('For `registryRoute(string, HttpRequestMethod, HttpRouteHandler)` form, `handler` parameter is mandatory.');
             }
             xroute = {
                 handler: handler,
-                method: method || http.RequestMethod.GET,
+                method: method || http.HttpRequestMethod.GET,
                 path: route,
             };
         }
@@ -119,7 +119,7 @@ var RouteRegistry = /** @class */ (function () {
         /**
          * Obtain the list of routes stored in the registry
          * Getter
-         * @returns {RouteDescriptor[]}
+         * @returns {HttpRouteDescriptor[]}
          */
         get: function () {
             return this.registry;
@@ -156,43 +156,43 @@ var ROUTE_REGISTRY_METADATA_NAME = '__route_registry__';
 var generateRouteWrapper = function (oldMethod, target) {
     /**
      *
-     * @param {Request} req
-     * @param {Response} res
+     * @param {HttpRequest} req
+     * @param {HttpResponse} res
      * @param {any[]} params
      */
-    return function (req, res, params) {
+    return function (req, res) {
         var result = null;
         try {
             result = oldMethod.apply(target, []); // TODO: obtain arguments; see comment bellow
         }
         catch (error) {
-            // prepareErrorResponse(res, error) // TODO: Prepare
+            // prepareErrorHttpResponse(res, error) // TODO: Prepare
             return;
         }
         switch (true) {
             case result instanceof Promise:
                 result
                     .then(function (data) {
-                    // prepareSuccessResponse(res, data) // TODO: Prepare
+                    // prepareSuccessHttpResponse(res, data) // TODO: Prepare
                 })
                     .catch(function (error) {
-                    // prepareErrorResponse(res, error) // TODO: Prepare
+                    // prepareErrorHttpResponse(res, error) // TODO: Prepare
                 });
                 break;
             case result instanceof rxjs.Observable:
                 result.subscribe({
                     next: function (data) {
-                        // prepareSuccessResponse(res, data) // TODO: Prepare
+                        // prepareSuccessHttpResponse(res, data) // TODO: Prepare
                     },
                     error: function (error) {
-                        // prepareErrorResponse(res, error) // TODO: Prepare
+                        // prepareErrorHttpResponse(res, error) // TODO: Prepare
                     },
                     complete: function () {
                         res.end(''); // TODO: Prepare
                     },
                 });
                 break;
-            // prepareSuccessResponse(res, data) // TODO: Prepare
+            // prepareSuccessHttpResponse(res, data) // TODO: Prepare
         }
         // TODO:
         // // calculate old method's arguments
@@ -205,7 +205,7 @@ var generateRouteWrapper = function (oldMethod, target) {
 };
 /**
  *
- * @param {RequestMethod} method
+ * @param {HttpRequestMethod} method
  */
 var createRouteMappingDecorator = function (method) {
     /**
@@ -227,14 +227,14 @@ var createRouteMappingDecorator = function (method) {
     };
     return decorator;
 };
-var All = createRouteMappingDecorator(http.RequestMethod.ALL);
-var Delete = createRouteMappingDecorator(http.RequestMethod.DELETE);
-var Get = createRouteMappingDecorator(http.RequestMethod.GET);
-var Head = createRouteMappingDecorator(http.RequestMethod.HEAD);
-var Options = createRouteMappingDecorator(http.RequestMethod.OPTIONS);
-var Patch = createRouteMappingDecorator(http.RequestMethod.PATCH);
-var Post = createRouteMappingDecorator(http.RequestMethod.POST);
-var Put = createRouteMappingDecorator(http.RequestMethod.PUT);
+var All = createRouteMappingDecorator(http.HttpRequestMethod.ALL);
+var Delete = createRouteMappingDecorator(http.HttpRequestMethod.DELETE);
+var Get = createRouteMappingDecorator(http.HttpRequestMethod.GET);
+var Head = createRouteMappingDecorator(http.HttpRequestMethod.HEAD);
+var Options = createRouteMappingDecorator(http.HttpRequestMethod.OPTIONS);
+var Patch = createRouteMappingDecorator(http.HttpRequestMethod.PATCH);
+var Post = createRouteMappingDecorator(http.HttpRequestMethod.POST);
+var Put = createRouteMappingDecorator(http.HttpRequestMethod.PUT);
 /**
  * Append a path mapping to a controller
  *

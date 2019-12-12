@@ -1,8 +1,9 @@
 import 'reflect-metadata'
 
 import {ClassMethod, extendClassMethod} from '@glasswing/common'
-import {Request, RequestHandler, RequestMethod, Response} from '@glasswing/http'
+import {Http2Request, Http2Response, HttpRequest, HttpRequestMethod, HttpResponse} from '@glasswing/http'
 import {Observable} from 'rxjs'
+import {HttpRouteHandler} from '../route'
 import {RouteRegistry} from '../route-registry'
 
 export const ROUTE_REGISTRY_METADATA_NAME = '__route_registry__'
@@ -16,38 +17,38 @@ export const ROUTE_REGISTRY_METADATA_NAME = '__route_registry__'
  * @param oldMethod
  * @param target
  */
-const generateRouteWrapper = (oldMethod: any, target: any): RequestHandler =>
+const generateRouteWrapper = (oldMethod: any, target: any): HttpRouteHandler =>
   /**
    *
-   * @param {Request} req
-   * @param {Response} res
+   * @param {HttpRequest} req
+   * @param {HttpResponse} res
    * @param {any[]} params
    */
-  (req: Request, res: Response, params: any) => {
+  (req: HttpRequest | Http2Request, res: HttpResponse | Http2Response) => {
     let result: any = null
     try {
       result = oldMethod.apply(target, []) // TODO: obtain arguments; see comment bellow
     } catch (error) {
-      // prepareErrorResponse(res, error) // TODO: Prepare
+      // prepareErrorHttpResponse(res, error) // TODO: Prepare
       return
     }
     switch (true) {
       case result instanceof Promise:
         result
           .then((data: string) => {
-            // prepareSuccessResponse(res, data) // TODO: Prepare
+            // prepareSuccessHttpResponse(res, data) // TODO: Prepare
           })
           .catch((error: any) => {
-            // prepareErrorResponse(res, error) // TODO: Prepare
+            // prepareErrorHttpResponse(res, error) // TODO: Prepare
           })
         break
       case result instanceof Observable:
         result.subscribe({
           next(data: string) {
-            // prepareSuccessResponse(res, data) // TODO: Prepare
+            // prepareSuccessHttpResponse(res, data) // TODO: Prepare
           },
           error(error: any) {
-            // prepareErrorResponse(res, error) // TODO: Prepare
+            // prepareErrorHttpResponse(res, error) // TODO: Prepare
           },
           complete() {
             res.end('') // TODO: Prepare
@@ -55,7 +56,7 @@ const generateRouteWrapper = (oldMethod: any, target: any): RequestHandler =>
         })
         break
       default:
-      // prepareSuccessResponse(res, data) // TODO: Prepare
+      // prepareSuccessHttpResponse(res, data) // TODO: Prepare
     }
     // TODO:
     // // calculate old method's arguments
@@ -68,9 +69,9 @@ const generateRouteWrapper = (oldMethod: any, target: any): RequestHandler =>
 
 /**
  *
- * @param {RequestMethod} method
+ * @param {HttpRequestMethod} method
  */
-const createRouteMappingDecorator = (method: RequestMethod) /*: ??? */ => {
+const createRouteMappingDecorator = (method: HttpRequestMethod) /*: ??? */ => {
   /**
    *
    * @param {string|string[]} path
@@ -85,7 +86,7 @@ const createRouteMappingDecorator = (method: RequestMethod) /*: ??? */ => {
       propertyDescriptor: PropertyDescriptor,
     ): PropertyDescriptor =>
       extendClassMethod(propertyDescriptor, (oldMethod: ClassMethod) => {
-        const handler: RequestHandler = generateRouteWrapper(propertyDescriptor.value, target)
+        const handler: HttpRouteHandler = generateRouteWrapper(propertyDescriptor.value, target)
 
         registerRouteDescriptor(target, method, Array.isArray(path) ? path : [path || '/'], handler)
 
@@ -98,21 +99,21 @@ const createRouteMappingDecorator = (method: RequestMethod) /*: ??? */ => {
   return decorator
 }
 
-export const All = createRouteMappingDecorator(RequestMethod.ALL)
+export const All = createRouteMappingDecorator(HttpRequestMethod.ALL)
 
-export const Delete = createRouteMappingDecorator(RequestMethod.DELETE)
+export const Delete = createRouteMappingDecorator(HttpRequestMethod.DELETE)
 
-export const Get = createRouteMappingDecorator(RequestMethod.GET)
+export const Get = createRouteMappingDecorator(HttpRequestMethod.GET)
 
-export const Head = createRouteMappingDecorator(RequestMethod.HEAD)
+export const Head = createRouteMappingDecorator(HttpRequestMethod.HEAD)
 
-export const Options = createRouteMappingDecorator(RequestMethod.OPTIONS)
+export const Options = createRouteMappingDecorator(HttpRequestMethod.OPTIONS)
 
-export const Patch = createRouteMappingDecorator(RequestMethod.PATCH)
+export const Patch = createRouteMappingDecorator(HttpRequestMethod.PATCH)
 
-export const Post = createRouteMappingDecorator(RequestMethod.POST)
+export const Post = createRouteMappingDecorator(HttpRequestMethod.POST)
 
-export const Put = createRouteMappingDecorator(RequestMethod.PUT)
+export const Put = createRouteMappingDecorator(HttpRequestMethod.PUT)
 
 /******************************************************************************
  *
@@ -120,11 +121,11 @@ export const Put = createRouteMappingDecorator(RequestMethod.PUT)
  *
  *****************************************************************************/
 
-const prepareSuccessResponse = (res: Response, data: string): void => {
+const prepareSuccessHttpResponse = (res: HttpResponse, data: string): void => {
   // TODO
 }
 
-const prepareErrorResponse = (res: Response, data: string): void => {
+const prepareErrorHttpResponse = (res: HttpResponse, data: string): void => {
   // TODO
 }
 
@@ -138,9 +139,9 @@ const prepareErrorResponse = (res: Response, data: string): void => {
  */
 export const registerRouteDescriptor = (
   target: any,
-  method: RequestMethod,
+  method: HttpRequestMethod,
   path: string[],
-  handler: RequestHandler,
+  handler: HttpRouteHandler,
 ) => {
   const routeRegistry: RouteRegistry = Reflect.hasMetadata(ROUTE_REGISTRY_METADATA_NAME, target)
     ? (Reflect.getMetadata(ROUTE_REGISTRY_METADATA_NAME, target) as RouteRegistry)

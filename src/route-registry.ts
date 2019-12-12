@@ -1,9 +1,9 @@
 import 'reflect-metadata'
 
 import {Singleton} from '@glasswing/common'
-import {RequestHandler, RequestMethod} from '@glasswing/http'
+import {HttpRequestMethod} from '@glasswing/http'
 
-import {RouteDescriptor} from './_types'
+import {HttpRouteDescriptor, HttpRouteHandler} from './route'
 
 export class RouteRegistryArgumentException extends Error {}
 
@@ -11,7 +11,7 @@ export class RouteRegistryRouteExistsException extends Error {}
 
 @Singleton()
 export class RouteRegistry {
-  private registry: RouteDescriptor[] = []
+  private registry: HttpRouteDescriptor[] = []
 
   /**
    * Clear the regiutry. Use only when Router is destroyed.
@@ -29,39 +29,43 @@ export class RouteRegistry {
    * @returns {void}
    * @example
    *    const controller = new MyController()
-   *    controller.registerRoute('/users', RequestMethod.GET, (req: Request, res: Response) => {
+   *    controller.registerRoute('/users', HttpRequestMethod.GET, (req: HttpRequest, res: Response) => {
    *      ...
    *    })
    * @example
    *    const controller = new MyController()
    *    const route: Route = {
    *      path: '/users',
-   *      method: RequestMethod.GET,
-   *      handler: (req: Request, res: Response) => {
+   *      method: HttpRequestMethod.GET,
+   *      handler: (req: HttpRequest, res: Response) => {
    *        ...
    *      }
    *    }
    *    controller.registerRoute(route)
    */
-  public registerRoute(route: string | RouteDescriptor, method?: RequestMethod, handler?: RequestHandler): void {
-    let xroute: RouteDescriptor
+  public registerRoute(
+    route: string | HttpRouteDescriptor,
+    method?: HttpRequestMethod,
+    handler?: HttpRouteHandler,
+  ): void {
+    let xroute: HttpRouteDescriptor
     if (typeof route === 'string') {
       if (!handler) {
         throw new RouteRegistryArgumentException(
-          'For `registryRoute(string, RequestMethod, RequestHandler)` form, `handler` parameter si mandatory.',
+          'For `registryRoute(string, HttpRequestMethod, HttpRouteHandler)` form, `handler` parameter is mandatory.',
         )
       }
       xroute = {
         handler,
-        method: method || RequestMethod.GET,
+        method: method || HttpRequestMethod.GET,
         path: route,
       }
     } else {
       xroute = route
     }
 
-    const match: RouteDescriptor | undefined = this.registry.find(
-      (r: RouteDescriptor) => r.path === xroute.path && r.method === xroute.method,
+    const match: HttpRouteDescriptor | undefined = this.registry.find(
+      (r: HttpRouteDescriptor) => r.path === xroute.path && r.method === xroute.method,
     )
     if (match) {
       throw new RouteRegistryRouteExistsException(
@@ -75,9 +79,9 @@ export class RouteRegistry {
   /**
    * Obtain the list of routes stored in the registry
    * Getter
-   * @returns {RouteDescriptor[]}
+   * @returns {HttpRouteDescriptor[]}
    */
-  get routes(): RouteDescriptor[] {
+  get routes(): HttpRouteDescriptor[] {
     return this.registry
   }
 
@@ -87,9 +91,9 @@ export class RouteRegistry {
    * @param method
    * @returns {void}
    */
-  public unregisterRoutes(path: string, method?: RequestMethod): void {
+  public unregisterRoutes(path: string, method?: HttpRequestMethod): void {
     this.registry = this.registry
-      .map((r: RouteDescriptor) => (r.path === path && (r.method === method || method === undefined) ? null : r))
-      .filter((r: RouteDescriptor | null) => r !== null) as RouteDescriptor[]
+      .map((r: HttpRouteDescriptor) => (r.path === path && (r.method === method || method === undefined) ? null : r))
+      .filter((r: HttpRouteDescriptor | null) => r !== null) as HttpRouteDescriptor[]
   }
 }
