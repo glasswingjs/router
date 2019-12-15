@@ -54,8 +54,8 @@
   },
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@glasswing/common": "github:glasswingjs/common#master",
-    "@glasswing/http": "github:glasswingjs/http#master",
+    "@glasswing/common": "github:glasswingjs/common#7d58794",
+    "@glasswing/http": "github:glasswingjs/http#5d448cc",
     "find-my-way": "^2.2.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.3",
