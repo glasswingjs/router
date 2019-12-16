@@ -1,5 +1,5 @@
 import { HttpRequest, Http2Request, HttpResponse, Http2Response, HttpRequestMethod } from '@glasswing/http';
-import RouterFactory, { Instance, HTTPVersion } from 'find-my-way';
+import RouterFactory from 'find-my-way';
 
 declare type HttpRouteHandler = (req: HttpRequest | Http2Request, res: HttpResponse | Http2Response) => void;
 interface HttpRouteDescriptor {
@@ -82,11 +82,10 @@ declare const registerRouteDescriptor: (target: any, method: HttpRequestMethod, 
  */
 declare const getControllerPathMappings: (target: any) => RouteRegistry;
 
-declare type Router = Instance<HTTPVersion.V1> | Instance<HTTPVersion.V2>;
 interface HttpRouter extends RouterFactory.Instance<RouterFactory.HTTPVersion.V1> {
 }
 interface Http2Router extends RouterFactory.Instance<RouterFactory.HTTPVersion.V2> {
 }
 declare const registerRouter: () => void;
 
-export { All, Delete, Get, Head, Http2Router, HttpRouteDescriptor, HttpRouteHandler, HttpRouter, Options, Patch, Post, Put, ROUTE_REGISTRY_METADATA_NAME, RouteRegistry, RouteRegistryArgumentException, RouteRegistryRouteExistsException, Router, getControllerPathMappings, registerRouteDescriptor, registerRouter };
+export { All, Delete, Get, Head, Http2Router, HttpRouteDescriptor, HttpRouteHandler, HttpRouter, Options, Patch, Post, Put, ROUTE_REGISTRY_METADATA_NAME, RouteRegistry, RouteRegistryArgumentException, RouteRegistryRouteExistsException, getControllerPathMappings, registerRouteDescriptor, registerRouter };
