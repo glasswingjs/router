@@ -116,11 +116,4 @@ describe('@glasswing/router', () => {
       expect(routeRegistry.routes.length).to.equal(0)
     })
   })
-
-  describe('Router', () => {
-    it('::singleton() will return an object', () => {
-      expect(container.resolve('Router')).to.be.an('object')
-      // expect(container.resolve('Router') instanceof Y).to.be.an('object')
-    })
-  })
 })
