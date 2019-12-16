@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 
-import {Singleton} from '@glasswing/common'
 import {HttpRequestMethod} from '@glasswing/http'
+import {singleton} from 'tsyringe'
 
 import {HttpRouteDescriptor, HttpRouteHandler} from './route'
 
@@ -9,7 +9,7 @@ export class RouteRegistryArgumentException extends Error {}
 
 export class RouteRegistryRouteExistsException extends Error {}
 
-@Singleton()
+@singleton()
 export class RouteRegistry {
   private registry: HttpRouteDescriptor[] = []
 

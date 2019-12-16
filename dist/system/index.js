@@ -1,18 +1,18 @@
-System.register(['reflect-metadata', '@glasswing/common', '@glasswing/http', 'rxjs', 'find-my-way', 'tsyringe'], function (exports) {
+System.register(['reflect-metadata', '@glasswing/common', '@glasswing/http', 'rxjs', 'tsyringe', 'find-my-way'], function (exports) {
     'use strict';
-    var Singleton, extendClassMethod, HttpRequestMethod, Observable, RouterFactory, container;
+    var extendClassMethod, HttpRequestMethod, Observable, singleton, container, RouterFactory;
     return {
         setters: [function () {}, function (module) {
-            Singleton = module.Singleton;
             extendClassMethod = module.extendClassMethod;
         }, function (module) {
             HttpRequestMethod = module.HttpRequestMethod;
         }, function (module) {
             Observable = module.Observable;
         }, function (module) {
-            RouterFactory = module.default;
-        }, function (module) {
+            singleton = module.singleton;
             container = module.container;
+        }, function (module) {
+            RouterFactory = module.default;
         }],
         execute: function () {
 
@@ -144,7 +144,7 @@ System.register(['reflect-metadata', '@glasswing/common', '@glasswing/http', 'rx
                         .filter(function (r) { return r !== null; });
                 };
                 RouteRegistry = __decorate([
-                    Singleton()
+                    singleton()
                 ], RouteRegistry);
                 return RouteRegistry;
             }()));

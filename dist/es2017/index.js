@@ -1,9 +1,9 @@
 import 'reflect-metadata';
-import { Singleton, extendClassMethod } from '@glasswing/common';
+import { extendClassMethod } from '@glasswing/common';
 import { HttpRequestMethod } from '@glasswing/http';
 import { Observable } from 'rxjs';
+import { singleton, container } from 'tsyringe';
 import RouterFactory from 'find-my-way';
-import { container } from 'tsyringe';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -106,7 +106,7 @@ let RouteRegistry = class RouteRegistry {
     }
 };
 RouteRegistry = __decorate([
-    Singleton()
+    singleton()
 ], RouteRegistry);
 
 const ROUTE_REGISTRY_METADATA_NAME = '__route_registry__';

@@ -1,4 +1,4 @@
-define('index', ['exports', 'reflect-metadata', '@glasswing/common', '@glasswing/http', 'rxjs', 'find-my-way', 'tsyringe'], function (exports, reflectMetadata, common, http, rxjs, RouterFactory, tsyringe) { 'use strict';
+define('index', ['exports', 'reflect-metadata', '@glasswing/common', '@glasswing/http', 'rxjs', 'tsyringe', 'find-my-way'], function (exports, reflectMetadata, common, http, rxjs, tsyringe, RouterFactory) { 'use strict';
 
     RouterFactory = RouterFactory && RouterFactory.hasOwnProperty('default') ? RouterFactory['default'] : RouterFactory;
 
@@ -130,7 +130,7 @@ define('index', ['exports', 'reflect-metadata', '@glasswing/common', '@glasswing
                 .filter(function (r) { return r !== null; });
         };
         RouteRegistry = __decorate([
-            common.Singleton()
+            tsyringe.singleton()
         ], RouteRegistry);
         return RouteRegistry;
     }());

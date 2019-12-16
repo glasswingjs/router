@@ -8,8 +8,8 @@ require('reflect-metadata');
 var common = require('@glasswing/common');
 var http = require('@glasswing/http');
 var rxjs = require('rxjs');
-var RouterFactory = _interopDefault(require('find-my-way'));
 var tsyringe = require('tsyringe');
+var RouterFactory = _interopDefault(require('find-my-way'));
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -139,7 +139,7 @@ var RouteRegistry = /** @class */ (function () {
             .filter(function (r) { return r !== null; });
     };
     RouteRegistry = __decorate([
-        common.Singleton()
+        tsyringe.singleton()
     ], RouteRegistry);
     return RouteRegistry;
 }());

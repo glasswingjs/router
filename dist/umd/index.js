@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('reflect-metadata'), require('@glasswing/common'), require('@glasswing/http'), require('rxjs'), require('find-my-way'), require('tsyringe')) :
-    typeof define === 'function' && define.amd ? define(['exports', 'reflect-metadata', '@glasswing/common', '@glasswing/http', 'rxjs', 'find-my-way', 'tsyringe'], factory) :
-    (global = global || self, factory((global.gw = global.gw || {}, global.gw.router = {}), null, global.common, global.http, global.rxjs, global.RouterFactory, global.tsyringe));
-}(this, (function (exports, reflectMetadata, common, http, rxjs, RouterFactory, tsyringe) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('reflect-metadata'), require('@glasswing/common'), require('@glasswing/http'), require('rxjs'), require('tsyringe'), require('find-my-way')) :
+    typeof define === 'function' && define.amd ? define(['exports', 'reflect-metadata', '@glasswing/common', '@glasswing/http', 'rxjs', 'tsyringe', 'find-my-way'], factory) :
+    (global = global || self, factory((global.gw = global.gw || {}, global.gw.router = {}), null, global.common, global.http, global.rxjs, global.tsyringe, global.RouterFactory));
+}(this, (function (exports, reflectMetadata, common, http, rxjs, tsyringe, RouterFactory) { 'use strict';
 
     RouterFactory = RouterFactory && RouterFactory.hasOwnProperty('default') ? RouterFactory['default'] : RouterFactory;
 
@@ -134,7 +134,7 @@
                 .filter(function (r) { return r !== null; });
         };
         RouteRegistry = __decorate([
-            common.Singleton()
+            tsyringe.singleton()
         ], RouteRegistry);
         return RouteRegistry;
     }());
