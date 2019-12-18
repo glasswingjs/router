@@ -265,8 +265,9 @@ System.register(['reflect-metadata', '@glasswing/common', '@glasswing/http', 'rx
                 return Reflect.getMetadata(ROUTE_REGISTRY_METADATA_NAME, target);
             });
 
-            var registerRouter = exports('registerRouter', function () {
-                container.register('Router', {
+            var registerRouter = exports('registerRouter', function (c) {
+                c = c || container;
+                c.register('Router', {
                     useFactory: function () { return RouterFactory(); },
                 });
             });

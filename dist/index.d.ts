@@ -1,5 +1,6 @@
 import { HttpRequest, Http2Request, HttpResponse, Http2Response, HttpRequestMethod } from '@glasswing/http';
 import RouterFactory from 'find-my-way';
+import { DependencyContainer } from 'tsyringe';
 
 declare type HttpRouteHandler = (req: HttpRequest | Http2Request, res: HttpResponse | Http2Response) => void;
 interface HttpRouteDescriptor {
@@ -86,6 +87,6 @@ interface HttpRouter extends RouterFactory.Instance<RouterFactory.HTTPVersion.V1
 }
 interface Http2Router extends RouterFactory.Instance<RouterFactory.HTTPVersion.V2> {
 }
-declare const registerRouter: () => void;
+declare const registerRouter: (c?: DependencyContainer | undefined) => void;
 
 export { All, Delete, Get, Head, Http2Router, HttpRouteDescriptor, HttpRouteHandler, HttpRouter, Options, Patch, Post, Put, ROUTE_REGISTRY_METADATA_NAME, RouteRegistry, RouteRegistryArgumentException, RouteRegistryRouteExistsException, getControllerPathMappings, registerRouteDescriptor, registerRouter };

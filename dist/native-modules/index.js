@@ -254,8 +254,9 @@ var getControllerPathMappings = function (target) {
     return Reflect.getMetadata(ROUTE_REGISTRY_METADATA_NAME, target);
 };
 
-var registerRouter = function () {
-    container.register('Router', {
+var registerRouter = function (c) {
+    c = c || container;
+    c.register('Router', {
         useFactory: function () { return RouterFactory(); },
     });
 };

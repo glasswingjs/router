@@ -222,8 +222,9 @@ const getControllerPathMappings = (target) => {
     return Reflect.getMetadata(ROUTE_REGISTRY_METADATA_NAME, target);
 };
 
-const registerRouter = () => {
-    container.register('Router', {
+const registerRouter = (c) => {
+    c = c || container;
+    c.register('Router', {
         useFactory: () => RouterFactory(),
     });
 };
