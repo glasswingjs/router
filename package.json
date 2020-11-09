@@ -56,7 +56,7 @@
   "dependencies": {
     "@glasswing/common": "glasswingjs/common#5bb3ee9",
     "@glasswing/http": "glasswingjs/http#bf41f4e",
-    "find-my-way": "^2.2.1",
+    "find-my-way": "^2.2.5",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.3",
     "tsyringe": "^4.0.1"
