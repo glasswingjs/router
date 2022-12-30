@@ -37,7 +37,7 @@
     "chai": "^4.2.0",
     "cross-env": "^6.0.3",
     "dts-bundle-generator": "^3.3.1",
-    "mocha": "^6.2.2",
+    "mocha": "^10.2.0",
     "nodemon": "^2.0.2",
     "nyc": "^14.1.1",
     "prettier": "^1.19.1",
